@@ -1,22 +1,27 @@
-# info for scaling to multiple rally/check-points
-for f in ./archive/* ; do (cd "archive" && echo "$(basename $f)"); done
-count=$(ls -1 archive | wc -l | awk '{ print $1}')
+## info for scaling to multiple rally/check-points
+# for f in ./archive/* ; do (cd "archive" && echo "$(basename $f)" && check_agent mac_sierra_vanilla); done
+# count=$(ls -1 archive | wc -l | awk '{ print $1}')
 
-# main check_agent logic
-check_agent mac_sierra_vanilla
+ test=$(for f in ./archive/* ; do (cd "archive" && echo "pipe=\$(check_agent $(basename $f) pipe)"); done)
+ echo "$test"
+## main check_agent logic
+# check_agent mac_sierra_vanilla
 
-# testing scalability
-touch archive/rallypoint$count.txt
-
+## testing scalability
+# touch archive/rallypoint$count.txt
+# echo "$(launchctl list | awk '{print $3}')"
+check_agent mac_sierra_vanilla "$(launchctl list | awk '{print $3}')"
 check_agent(){
-  if ! [ -f archive/$1.txt ]; then launchctl list | awk '{print $3}' > archive/$1.txt; fi
+#  echo "$2"; echo ; 
+#  echo "file-name:"; echo "$1";
+  if ! [ -f archive/$1.txt ]; then echo 'reached created file' && echo "$2" > archive/$1.txt; fi
+  # echo "$2"
+  echo "$2" > archive/temp; 
 
-  launchctl list | awk '{print $3}' > temp; 
-
-  var=$(diff archive/$1.txt temp) # > overflow
+  var="$(diff archive/$1.txt archive/temp)" # > overflow
   check_empty "$var"
 
-  rm -rf temp;
+#  rm -rf temp;
 }
 
 check_empty(){

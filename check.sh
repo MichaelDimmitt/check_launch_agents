@@ -1,13 +1,21 @@
+# info for scaling to multiple checkpoints
+for f in ./archive/* ; do (cd "archive" && echo "$f"); done
+count=$(ls -1 archive | wc -l | awk '{ print $1}')
+
+# main check_agent logic
 check_agent mac_sierra_vanilla
 
+# testing scalability
+touch archive/checkpoint$count.txt
+
 check_agent(){
-  if ! [ -f $1.txt ]; then launchctl list | awk '{print $3}' > $1.txt; fi
+  if ! [ -f archive/$1.txt ]; then launchctl list | awk '{print $3}' > archive/$1.txt; fi
 
   launchctl list | awk '{print $3}' > temp; 
 
-  var=$(diff $1.txt temp) # > overflow
-
+  var=$(diff archive/$1.txt temp) # > overflow
   check_empty "$var"
+
   rm -rf temp;
 }
 

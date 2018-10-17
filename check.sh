@@ -1,12 +1,12 @@
-# info for scaling to multiple checkpoints
-for f in ./archive/* ; do (cd "archive" && echo "$f"); done
+# info for scaling to multiple rally/check-points
+for f in ./archive/* ; do (cd "archive" && echo "$(basename $f)"); done
 count=$(ls -1 archive | wc -l | awk '{ print $1}')
 
 # main check_agent logic
 check_agent mac_sierra_vanilla
 
 # testing scalability
-touch archive/checkpoint$count.txt
+touch archive/rallypoint$count.txt
 
 check_agent(){
   if ! [ -f archive/$1.txt ]; then launchctl list | awk '{print $3}' > archive/$1.txt; fi
@@ -37,5 +37,5 @@ check_empty(){
 # otherwise ls-count
 # num=$(ls -1 | wc -l | awk '{ print $1}')
 
-# check_agent checkpoint$num
+# check_agent rallypoint$num
 
